@@ -1,14 +1,10 @@
 <h1>{{ title }}</h1>
 
-<ul>
-  <li><a [routerLink]="['/dashboard']">Dashboard</a></li>
-  <li><a [routerLink]="['/heroes']">Heroes</a></li>
-</ul>
+<nav>
+  <a [routerLink]="['/dashboard']">Dashboard</a>
 
-<!-- <app-dashboard></app-dashboard> -->
-<!-- <app-heroes></app-heroes>
-<app-messages></app-messages> -->
+  <a [routerLink]="['/heroes']">Heroes</a>
+</nav>
 
-<div>
-  <router-outlet> </router-outlet>
-</div>
+<router-outlet> </router-outlet>
+<!-- <app-messages></app-messages> -->
