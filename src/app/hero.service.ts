@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Hero } from "./hero";
 
-import { of, Observable } from "rxjs";
+import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { MessageService } from "./message.service";
 
@@ -11,15 +11,15 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
   providedIn: "root"
 })
 export class HeroService {
-  private heroesUrl = "/api/heros";
+  private heroesUrl = "/api/heroes";
   //URL to web api
 
   constructor(
-    private messageService: MessageService,
-    private http: HttpClient
+    private http: HttpClient,
+    private messageService: MessageService
   ) {}
 
-  private log(message: string) {
+  private log(message: string): void {
     this.messageService.add(`HeroService: ${message}`);
   }
 
