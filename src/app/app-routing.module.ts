@@ -16,13 +16,7 @@ const routes = [
     component: DashboardComponent
   },
   { path: "detail/:id", component: HeroDetailComponent },
-  { path: "heroes", component: HeroesComponent },
-
-  {
-    path: "**",
-    redirectTo: "dashboard",
-    pathMatch: "full"
-  }
+  { path: "heroes", component: HeroesComponent }
 ];
 
 @NgModule({
