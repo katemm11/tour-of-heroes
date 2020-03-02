@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Hero } from "./hero";
 
-import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
+import { Observable, of } from "rxjs";
+import { map, tap, catchError } from "rxjs/operators";
 import { MessageService } from "./message.service";
 
 import { HttpClient, HttpHeaders } from "@angular/common/http";
@@ -11,9 +11,12 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
   providedIn: "root"
 })
 export class HeroService {
-  private heroesUrl = "/api/heroes";
   //URL to web api
+  private heroesUrl = "/api/heroes";
 
+  httpOptions = {
+    headers: new HttpHeaders({ "Content-Type": "application/json" })
+  };
   constructor(
     private http: HttpClient,
     private messageService: MessageService
@@ -24,14 +27,45 @@ export class HeroService {
   }
 
   getHeroes(): Observable<Hero[]> {
-    this.messageService.add("HeroService: fetched heroes");
-    return this.http.get<Hero[]>(this.heroesUrl);
+    return this.http.get<Hero[]>(this.heroesUrl).pipe(
+      tap(_ => this.log("fetched heroes")),
+      catchError(this.handleError<Hero[]>("getHeroes", []))
+    );
+  }
+
+  //private error handling message
+  private handleError<T>(operation = "operation", result?: T) {
+    return (error: any): Observable<T> => {
+      //send error to remote loggin infrastructure
+      console.error(error);
+
+      //transform error for user consumption
+      this.log(`${operation} failed: ${error.message}`);
+
+      return of(result as T);
+    };
   }
 
   getHero(id: number): Observable<Hero> {
-    this.messageService.add(`HeroService: fetched hero ${id}`);
-    return this.getHeroes().pipe(
-      map((heroes: Hero[]) => heroes.find(hero => hero.id === id))
+    const url = `${this.heroesUrl}/${id}`;
+    return this.http.get<Hero>(url).pipe(
+      tap(_ => this.log(`Fetched hero id=${id}`)),
+      catchError(this.handleError<Hero>(`get hero id=${id}`))
+    );
+  }
+
+  updateHero(hero: Hero): Observable<any> {
+    const url = `${this.heroesUrl}/${hero.id}`;
+    return this.http.put(this.heroesUrl, hero, this.httpOptions).pipe(
+      tap(_ => this.log(`Updated hero id=${hero.id}`)),
+      catchError(this.handleError<any>(`update hero`))
+    );
+  }
+
+  addHero(hero: Hero): Observable<Hero> {
+    return this.http.post<Hero>(this.heroesUrl, hero, this.httpOptions).pipe(
+      tap(_ => this.log(`added new hero id=${hero.id}`)),
+      catchError(this.handleError<Hero>(`added hero`))
     );
   }
 }
